@@ -41,6 +41,7 @@ def main():
         mailbox = config_parser.get(section, "mailbox", fallback="INBOX")
         auto_prune = config_parser.getboolean(section, "auto_prune", fallback=False)
         trash_mailbox = config_parser.get(section, "trash_mailbox")
+        chromedriver_path = config_parser.get(section, "chromedriver_path")
         headless = config_parser.get(section, "headless", fallback=False)
 
         logger.info(f"Connect to IMAP server {host}:{port}")
@@ -86,7 +87,11 @@ def main():
             if headless:
                 options.add_argument("--headless")
 
-            driver = webdriver.Chrome(options=options)
+            service = None
+            if chromedriver_path:
+                service = webdriver.ChromeService(executable_path=chromedriver_path)
+
+            driver = webdriver.Chrome(options=options, service=service)
             driver.get("https://dondino.de")
 
             for id, link in links.items():
